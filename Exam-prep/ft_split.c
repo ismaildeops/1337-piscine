@@ -1,81 +1,72 @@
-#include <stdlib.h>
-#include <stdio.h>
-
-int is_charset(char c, char *charset)
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int is_space(char c)
 {
-    int i = 0;
-    while (charset[i])
-    {
-        if (c == charset[i])
-            return 1;
-        i++;   
-    }
-    return 0;
+	return ((c >= 9 && c <= 13) || c == ' ');
+}
+int count_words(char *s)
+{
+	int i = 0;
+	int counts = 0;
+	while(s[i])
+	{
+		while(is_space(s[i]))
+			i++;
+		while(!is_space(s[i]) && s[i])
+			i++;
+		counts++;
+		i++;
+	}
+	return counts;
 }
 
-int count_words(char *str, char *charset)
+char **ft_split(char *s)
 {
-    int i = 0;
-    int count = 0;
-    if (!is_charset(str[0], charset))
-    {
-        count++;        
-    }
-    while (str[i])
-    {
-        if (is_charset(str[i], charset))
-        {
-            
-            if (!is_charset(str[i + 1], charset) && str[i + 1] != '\0')
-            {
-                count++;
-            }
-        }
-        i++;
-    }
-    return count;
+	char **words;
+	int i = 0;
+	int start = 0;
+	int end = 0;
+	int j = 0;
+	int k;
+	words = malloc(sizeof(char *) * count_words(s) + 1);
+	//---------------------------------------------------------------------------------------
+	while(s[i])
+	{
+		while(is_space(s[i]))
+			i++;
+		start = i;
+		while(!is_space(s[i]) && s[i])
+		{
+			i++;
+		}
+		end = i;
+		words[j] = malloc(sizeof(char) * (end - start) + 1);
+		if (!words[j])
+			return (NULL);
+		k = 0;
+		while(k < end - start)
+		{
+			words[j][k] = s[start + k];
+			k++;
+		}
+		words[j][end - start] = '\0';
+		j++;
+	}
+	words[j] = NULL;
+	return words;
 }
 
-char **ft_split(char *str, char *charset)
-{
-    char **words;
-    int start = 0;
-    int end = 0;
-    int j = 0;
-    int k;
-    words = malloc(sizeof(char *) * (count_words(str,charset) + 1));
-    if (!words)
-        return NULL;
-    int i = 0;
-    while (str[i])
-    {
-        while(is_charset(str[i],charset) && str[i])
-            i++;
-        start = i;
-        while (!is_charset(str[i],charset) && str[i])
-            i++;
-        end = i;
-        words[j] = malloc(sizeof(char) * ((end - start) + 1));
-        if (!words[j])
-            return NULL;
-        k = 0;
-        while (k < end - start)
-        {
-            words[j][k] = str[start + k];
-            k++;
-        }
-        words[j][k] = '\0';
-        j++;
-    }
-    words[j] = 0;
-    return words;
-}
 int main()
 {
-    char charset[] = ",";
-    char str[] = "Hello,world";
-    char **words;
-    words = ft_split(str,charset);
-    int i = 0;
-    printf("%s", words[i]);
+	char **str;
+	int i;
+	str = ft_split("Hello world Hi");
+	i = 0;
+	while(str[i])
+	{
+		printf("%s\n", str[i]);
+		i++;
+	}
+	return 0;
 }
